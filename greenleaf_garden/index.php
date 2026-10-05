@@ -1,42 +1,60 @@
+```php
 <?php
 session_start();
 include 'koneksi.php';
 ?>
-       <!DOCTYPE html>
-      <html lang="id"> 
-        <head> 
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>GREENLEAF GARDEN</title> <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
-          <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-          <style>
+<!DOCTYPE html>
+<html lang="id"> 
+<head> 
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GREENLEAF GARDEN</title>
+  <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
 html {
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f8fbf9;
-  color: #304238;
-}
-body {
   font-family: "Poppins", Arial, sans-serif;
+  background: #f7faf8;
+  color: #26382e;
 }
 
+/* =========================================================
+   NAVBAR 
+========================================================= */
 
-/* =========================
-   NAVBAR
-========================= */
+/* =========================================================
+   NAVBAR — GAYA SAMA DENGAN PROFILE
+========================================================= */
 
 .navbar-greenleaf {
-  background-color: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid #dfeae3;
-  box-shadow: 0 4px 18px rgba(24, 73, 45, 0.07);
+  background: rgba(255, 255, 255, 0.94);
+
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.06);
+
+  border-bottom:
+    1px solid rgba(25, 135, 84, 0.08);
+
+  padding: 10px 0;
+
   z-index: 1050;
 }
 
@@ -44,69 +62,225 @@ body {
   max-width: 1200px;
 }
 
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.navbar-greenleaf .greenleaf-logo {
+
+  display: flex;
+  align-items: center;
+
+  color: #198754;
+
+  font-size: 21px;
+  font-weight: 800;
+
+  letter-spacing: 0.3px;
+
+  text-decoration: none;
+
+  transition: 0.25s ease;
+}
+
+.navbar-greenleaf .greenleaf-logo:hover {
+  color: #146c43;
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.navbar-greenleaf .nav {
+  gap: 8px;
+}
+
 .navbar-greenleaf .nav-link {
-  color: #59665f !important;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 7px;
-  margin: 0 2px;
+
+  display: flex;
+  align-items: center;
+
+  color: #53655c !important;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  padding: 10px 15px !important;
+
+  border-radius: 10px;
+
+  text-decoration: none;
+
   transition: all 0.25s ease;
 }
 
+
+/* IKON MENU */
+
+.navbar-greenleaf .nav-link i {
+
+  margin-right: 6px;
+
+  font-size: 15px;
+
+  line-height: 1;
+}
+
+
+/* HOVER */
+
 .navbar-greenleaf .nav-link:hover {
+
   color: #198754 !important;
-  background-color: #eef8f2;
+
+  background: #edf8f2;
 }
 
 
-/* =========================
-   LOGO
-========================= */
+/* =========================================================
+   ICON PROFILE & KERANJANG
+========================================================= */
 
-.greenleaf-logo {
-  color: #16824e;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.7px;
+.navbar-greenleaf .navbar-icon {
+
+  width: 43px;
+  height: 43px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
   text-decoration: none;
-  transition: 0.3s;
-}
 
-.greenleaf-logo:hover {
-  color: #0f633b;
-  transform: translateY(-1px);
-}
-
-
-/* =========================
-   ICON
-========================= */
-
-.navbar-icon {
-  color: #3e4b44;
-  font-size: 19px;
-  text-decoration: none;
-  border-radius: 9px;
-  padding: 7px 9px !important;
-  transition: all 0.3s ease;
-}
-
-.navbar-icon:hover {
   color: #198754;
-  background-color: #eaf7ef;
+
+  background: #edf8f2;
+
+  border: none;
+
+  transition: all 0.3s ease;
+
+  font-size: 19px;
+
+  padding: 0;
+}
+
+.navbar-greenleaf .navbar-icon:hover {
+
+  background: #198754;
+
+  color: #ffffff;
+
   transform: translateY(-2px);
 }
 
-/* =========================
-   CAROUSEL / HERO
-========================= */
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 991px) {
+
+  .navbar-greenleaf {
+    padding: 10px 0;
+  }
+
+  .navbar-greenleaf .container {
+    max-width: 100%;
+  }
+
+  .navbar-greenleaf .greenleaf-logo {
+    font-size: 18px;
+  }
+
+  .navbar-greenleaf .nav {
+
+    width: 100%;
+
+    justify-content: flex-start !important;
+
+    gap: 3px;
+
+    margin-top: 10px;
+
+    padding: 5px 0;
+  }
+
+  .navbar-greenleaf .nav-link {
+
+    padding: 11px 13px !important;
+
+    font-size: 13px;
+  }
+
+  .navbar-greenleaf .navbar-icon {
+
+    width: 40px;
+    height: 40px;
+
+    font-size: 17px;
+  }
+
+  .navbar-greenleaf .d-flex {
+
+    margin-top: 8px;
+  }
+
+}
+
+
+/* =========================================================
+   EXTRA SMALL
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .navbar-greenleaf .greenleaf-logo {
+
+    font-size: 15px;
+
+    letter-spacing: 0.5px;
+  }
+
+  .navbar-greenleaf .nav-link {
+
+    font-size: 11px;
+
+    padding: 8px 9px !important;
+  }
+
+  .navbar-greenleaf .nav-link i {
+
+    font-size: 13px;
+
+    margin-right: 4px;
+  }
+
+  .navbar-greenleaf .navbar-icon {
+
+    width: 36px;
+    height: 36px;
+
+    font-size: 16px;
+  }
+
+}
+
+/* =========================================================
+   HERO / CAROUSEL
+========================================================= */
 
 .carousel {
-  margin-top: 65px;
+  margin-top: 72px;
+  background: #173d2a;
 }
 
 .carousel-item {
-  height: 580px;
+  height: 650px;
   position: relative;
   overflow: hidden;
 
@@ -115,316 +289,420 @@ body {
   background-repeat: no-repeat;
 }
 
-/* GAMBAR SLIDE 1 */
+/* IMAGE 1 */
+
 .carousel-item:nth-child(1) {
-  background-image: url("https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=1600&q=85");
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 35, 23, 0.78) 0%,
+      rgba(10, 35, 23, 0.42) 42%,
+      rgba(10, 35, 23, 0.10) 75%
+    ),
+    url('img/tanaman hias.jpg') center / cover no-repeat;
 }
 
-/* GAMBAR SLIDE 2 */
+/* IMAGE 2 */
+
 .carousel-item:nth-child(2) {
-  background-image: url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=85");
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 35, 23, 0.15) 0%,
+      rgba(10, 35, 23, 0.40) 55%,
+      rgba(10, 35, 23, 0.78) 100%
+    ),
+    url('img/tanaman bunga.jpg') center / cover no-repeat;
 }
 
-/* GAMBAR SLIDE 3 */
-.carousel-item:nth-child(3) {
-  background-image: url("https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1600&q=85");
+/* HIDE BOOTSTRAP PLACEHOLDER */
+
+.carousel-item > svg {
+  display: none;
 }
+
 .carousel-caption {
   z-index: 2;
-  bottom: 18%;
-  max-width: 700px;
+  bottom: 17%;
+  max-width: 720px;
 }
 
 .carousel-caption h1 {
-  font-family: Georgia, serif;
-  font-size: 52px;
+  margin-bottom: 18px;
+
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: clamp(48px, 6vw, 82px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -3px;
+  text-transform: capitalize;
+}
+
+.carousel-caption p {
+  max-width: 530px;
+  margin-bottom: 22px;
+
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.88);
+}
+
+/* HERO BUTTON */
+
+.carousel-caption .btn {
+  border: 1px solid rgba(255,255,255,0.65);
+
+  background: rgba(255,255,255,0.96);
+  color: #145c3a;
+
+  border-radius: 5px;
+
+  padding: 11px 27px;
+
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.5px;
-}
 
-.carousel-caption p,
-.carousel-caption .btn {
-  font-family: Arial, sans-serif;
-}
+  box-shadow: none;
 
-.carousel-caption h1,
-.carousel-caption p,
-.carousel-caption .btn {
-  font-family: "Trebuchet MS", Arial, sans-serif;
-}
-.carousel-caption p:last-child {
-  margin-top: 10px;
-  margin-bottom: 0;
-}
-
-.carousel-caption .btn {
-  border: none;
-  background-color: #ffffff;
-  color: #146b42;
-  border-radius: 25px;
-  padding: 10px 25px;
-  font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   transition: all 0.3s ease;
 }
 
 .carousel-caption .btn:hover {
-  background-color: #146b42;
+  background: #198754;
   color: #ffffff;
+  border-color: #198754;
+
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.18);
 }
 
-/* =========================
+
+/* =========================================================
    CAROUSEL INDICATOR
-========================= */
+========================================================= */
 
 .carousel-indicators {
+  bottom: 28px;
   z-index: 3;
 }
 
 .carousel-indicators button {
-  width: 25px;
-  height: 4px;
+  width: 28px;
+  height: 3px;
+
   border: 0;
-  border-radius: 20px;
+  border-radius: 10px;
+
   margin: 0 4px;
+
+  opacity: 0.55;
+}
+
+.carousel-indicators button.active {
+  opacity: 1;
 }
 
 
-/* =========================
+/* =========================================================
    PRODUCT SECTION
-========================= */
+========================================================= */
 
 .product-section {
-  padding: 85px 0;
-  background-color: #f8fbf9;
+  padding: 115px 0;
+  background: #f7faf8;
 }
 
 .product-section:nth-of-type(even) {
-  background-color: #899b8a;
+  background: #eef6f1;
 }
+
+/* SECTION HEADER */
 
 .section-label {
   display: inline-block;
-  letter-spacing: 3px;
+
+  color: #198754;
+
   font-size: 10px;
   font-weight: 700;
-  color: #198754;
+
+  letter-spacing: 3px;
   text-transform: uppercase;
-  padding: 6px 12px;
-  background-color: #eaf7ef;
-  border-radius: 20px;
+
+  margin-bottom: 14px;
 }
 
 .section-title {
-  font-size: 38px;
+  margin: 0;
+
+  color: #173d2a;
+
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: clamp(35px, 4vw, 52px);
   font-weight: 500;
-  margin-top: 12px;
-  color: #153e2a;
+
+  letter-spacing: -2px;
 }
 
 .section-line {
-  width: 55px;
-  height: 3px;
+  width: 45px;
+  height: 2px;
+
+  margin: 22px auto 58px;
+
+  background: #198754;
   border-radius: 10px;
-  background-color: #198754;
-  margin: 17px auto 48px;
 }
 
-.product-section {
-  font-family: "Trebuchet MS", Arial, sans-serif;
-}
 
-.section-label,
-.section-title,
-.product-name,
-.product-price,
-.product-description,
-.btn-greenleaf {
-  font-family: "Trebuchet MS", Arial, sans-serif;
-}
-
-/* =========================
-   PRODUCT CARD
-========================= */
+/* =========================================================
+   PRODUCT CARD — MINIMAL BEHANCE
+========================================================= */
 
 .product-card {
-  border: 1px solid #dfebe4;
-  border-radius: 16px;
+  position: relative;
+
+  border: none !important;
+  border-radius: 6px !important;
+
   overflow: hidden;
-  background-color: #ffffff;
-  transition: all 0.4s ease;
-  height: 100%;
+
+  background: #ffffff;
+
+  box-shadow: none !important;
+
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
 }
 
 .product-card:hover {
-  transform: translateY(-9px);
-  border-color: #bcdac8;
+  transform: translateY(-8px);
+
   box-shadow:
-    0 18px 40px rgba(22, 111, 68, 0.13) !important;
+    0 20px 45px rgba(25, 80, 52, 0.12) !important;
 }
 
 
-/* =========================
+/* =========================================================
    PRODUCT IMAGE
-========================= */
+========================================================= */
 
 .product-image-wrapper {
-  height: 305px;
+  height: 330px;
+
   overflow: hidden;
+
   position: relative;
-  background-color: #edf6f0;
+
+  background: #e8f2ec;
 }
 
 .product-image {
   width: 100%;
   height: 100%;
+
   object-fit: cover;
-  transition: transform 0.6s ease;
+
+  transition:
+    transform 0.7s cubic-bezier(.2,.7,.2,1);
 }
 
 .product-card:hover .product-image {
-  transform: scale(1.07);
+  transform: scale(1.06);
 }
 
 
-/* =========================
+/* IMAGE OVERLAY */
+
+.product-image-wrapper::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(15, 50, 32, 0.10),
+      transparent 40%
+    );
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
    PRODUCT BODY
-========================= */
+========================================================= */
 
 .product-body {
-  padding: 22px;
+  padding: 23px 21px 25px;
 }
 
 .product-name {
-  color: #1c5135;
-  font-size: 19px;
-  font-weight: 600;
   margin-bottom: 7px;
+
+  color: #183e2c;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  letter-spacing: -0.2px;
 }
 
 .product-price {
-  display: inline-block;
-  color: #198754;
-  font-size: 15px;
-  font-weight: 700;
+  display: block;
+
   margin-bottom: 10px;
+
+  color: #198754;
+
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .product-description {
-  color: #748078;
-  font-size: 13px;
-  line-height: 1.65;
   min-height: 42px;
+
+  margin-bottom: 0;
+
+  color: #77857e;
+
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 
-/* =========================
+/* =========================================================
    BUTTON
-========================= */
+========================================================= */
 
 .btn-greenleaf {
-  background:
-    linear-gradient(
-      135deg,
-      #1d9c5f,
-      #13a25f
-    );
+  border: 1px solid #198754;
+
+  background: #198754;
   color: #ffffff;
-  border-radius: 25px;
+
+  border-radius: 4px;
+
   padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  border: none;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.5px;
+
+  box-shadow: none;
+
   transition: all 0.3s ease;
-  box-shadow: 0 5px 12px rgba(25, 135, 84, 0.12);
 }
 
 .btn-greenleaf:hover {
-  background:
-    linear-gradient(
-      135deg,
-      #1d9c5f,
-      #13a25f
-    );
+  background: #145c3a;
+  border-color: #145c3a;
+
   color: #ffffff;
+
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(25, 135, 84, 0.20);
+
+  box-shadow:
+    0 8px 20px rgba(25,135,84,0.16);
 }
 
 
-/* =========================
+/* =========================================================
    FOOTER
-========================= */
+========================================================= */
 
 .footer-greenleaf {
+  padding: 70px 0;
+
   background:
     radial-gradient(
-      circle at 15% 20%,
-      rgba(25, 135, 84, 0.08),
+      circle at 20% 20%,
+      rgba(25,135,84,0.08),
       transparent 30%
     ),
-    linear-gradient(
-      135deg,
-      #e6f5eb,
-      #f7fbf8
-    );
+    #eaf4ee;
 
-  border-top: 1px solid #d5e7dc;
-  padding: 55px 0;
+  border-top: 1px solid #d7e6dc;
 }
 
 .footer-greenleaf h5 {
-  color: #12452c !important;
+  color: #145c3a !important;
+
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.8px;
+
+  letter-spacing: 1.5px;
 }
 
 .footer-greenleaf p {
-  color: #687970;
-  font-size: 13px;
-  margin-top: 9px;
+  color: #718078;
+
+  font-size: 12px;
+
+  margin-top: 10px;
 }
 
 .back-top {
   display: inline-block;
+
   color: #198754;
+
+  font-size: 12px;
+  font-weight: 600;
+
   text-decoration: none;
-  font-size: 13px;
-  margin-top: 5px;
+
+  margin-top: 8px;
+
   transition: 0.3s;
 }
 
 .back-top:hover {
-  color: #0f5132;
+  color: #145c3a;
   transform: translateY(-3px);
 }
 
 
-/* =========================
+/* =========================================================
    RESPONSIVE
-========================= */
+========================================================= */
 
 @media (max-width: 768px) {
 
   .navbar-greenleaf header {
-    justify-content: center !important;
+    min-height: 65px;
+  }
+
+  .greenleaf-logo {
+    font-size: 14px;
+    letter-spacing: 1px;
   }
 
   .navbar-greenleaf .nav {
     order: 3;
+
     width: 100%;
+
     justify-content: center !important;
+
     margin-top: 8px;
+
+    padding-bottom: 4px;
   }
 
   .navbar-greenleaf .nav-link {
-    padding: 6px 7px !important;
-    font-size: 11px;
-    margin: 0;
+    padding: 6px 8px !important;
+
+    font-size: 10px;
   }
 
   .carousel {
@@ -432,36 +710,44 @@ body {
   }
 
   .carousel-item {
-    height: 450px;
+    height: 500px;
   }
 
   .carousel-caption {
-    bottom: 15%;
+    bottom: 13%;
+    left: 8%;
+    right: 8%;
   }
 
   .carousel-caption h1 {
-    font-size: 35px;
+    font-size: 42px;
+    letter-spacing: -1.5px;
   }
 
   .carousel-caption p {
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 1.7;
   }
 
   .carousel-caption .btn {
     padding: 9px 21px;
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .product-section {
-    padding: 65px 0;
+    padding: 80px 0;
   }
 
   .section-title {
-    font-size: 31px;
+    font-size: 35px;
+  }
+
+  .section-line {
+    margin-bottom: 40px;
   }
 
   .product-image-wrapper {
-    height: 275px;
+    height: 280px;
   }
 
   .product-body {
@@ -469,12 +755,45 @@ body {
   }
 }
 
+
+/* =========================================================
+   EXTRA SMALL
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .greenleaf-logo {
+    font-size: 12px;
+  }
+
+  .navbar-icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .navbar-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .carousel-item {
+    height: 460px;
+  }
+
+  .carousel-caption h1 {
+    font-size: 35px;
+  }
+
+  .product-image-wrapper {
+    height: 250px;
+  }
+
+}
 </style>
 </head>
 
 
 <body>
-
 
 <!-- =========================
      NAVBAR
@@ -484,44 +803,57 @@ body {
 
   <div class="container">
 
-    <header class="d-flex flex-wrap align-items-center justify-content-between py-2">
-
+    <header class="d-flex align-items-center justify-content-between">
 
       <!-- LOGO -->
 
       <a href="index.php"
          class="greenleaf-logo">
 
-        GREENLEAF GARDEN
+        <span>GREENLEAF GARDEN</span>
 
       </a>
 
 
       <!-- MENU -->
 
-      <ul class="nav col-auto justify-content-center">
+      <ul class="nav justify-content-center">
+
+        <!-- SEMUA PRODUK -->
 
         <li>
           <a href="#produk"
-             class="nav-link px-3 fw-medium">
+             class="nav-link">
+
+            <i class="bi bi-grid"></i>
 
             Semua Produk
 
           </a>
         </li>
 
+
+        <!-- TANAMAN HIAS -->
+
         <li>
           <a href="#tanaman-hias"
-             class="nav-link px-3">
+             class="nav-link">
+
+            <i class="bi bi-flower1"></i>
 
             Tanaman Hias
 
           </a>
         </li>
 
+
+        <!-- TANAMAN BUNGA -->
+
         <li>
           <a href="#tanaman-bunga"
-             class="nav-link px-3">
+             class="nav-link">
+
+            <i class="bi bi-flower2"></i>
 
             Tanaman Bunga
 
@@ -533,46 +865,27 @@ body {
 
       <!-- PROFILE & KERANJANG -->
 
-      <div class="d-flex gap-1">
+      <div class="d-flex align-items-center gap-2">
 
 
-       <!-- PROFILE -->
+        <!-- PROFILE -->
 
-<a href="profile.php"
-   class="btn navbar-icon"
-   title="Profile">
+        <a href="profile.php"
+           class="navbar-icon"
+           title="Profile">
 
-    <svg xmlns="http://www.w3.org/2000/svg"
-         width="25"
-         height="25"
-         fill="currentColor"
-         viewBox="0 0 16 16">
+          <i class="bi bi-person-fill"></i>
 
-        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-
-        <path fill-rule="evenodd"
-              d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-
-    </svg>
-
-</a>
+        </a>
 
 
         <!-- KERANJANG -->
 
         <a href="keranjang.php"
-           class="btn navbar-icon"
+           class="navbar-icon"
            title="Keranjang">
 
-          <svg xmlns="http://www.w3.org/2000/svg"
-               width="25"
-               height="25"
-               fill="currentColor"
-               viewBox="0 0 16 16">
-
-            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1-1 1 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1-1 1 1 1 0 0 1 0-2"/>
-
-          </svg>
+          <i class="bi bi-cart3"></i>
 
         </a>
 
@@ -584,116 +897,125 @@ body {
 
 </div>
 
-
-
 <!-- =========================
      CAROUSEL
 ========================= -->
 
- <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
-      <div class="carousel-indicators">
-        <button
-          type="button"
-          data-bs-target="#myCarousel"
-          data-bs-slide-to="0"
-          class="active"
-          aria-current="true"
-          aria-label="Slide 1"
-        ></button>
+<div id="myCarousel"
+     class="carousel slide mb-6"
+     data-bs-ride="carousel">
 
-        <button
-          type="button"
-          data-bs-target="#myCarousel"
-          data-bs-slide-to="1"
-          aria-label="Slide 2"
-        ></button>
+  <div class="carousel-indicators">
+
+    <button
+      type="button"
+      data-bs-target="#myCarousel"
+      data-bs-slide-to="0"
+      class="active"
+      aria-current="true"
+      aria-label="Slide 1">
+    </button>
+
+    <button
+      type="button"
+      data-bs-target="#myCarousel"
+      data-bs-slide-to="1"
+      aria-label="Slide 2">
+    </button>
+
+  </div>
+
+
+  <div class="carousel-inner">
+
+    <div class="carousel-item active">
+
+      <div class="container">
+
+        <div class="carousel-caption text-start">
+
+          <h1>tanaman hias</h1>
+
+          <p class="opacity-75">
+            sedang mencari tanaman hias disini tempatnya
+          </p>
+
+          <p>
+            <a class="btn btn-lg btn-primary"
+               href="#tanaman-hias">
+              lihat
+            </a>
+          </p>
+
+        </div>
 
       </div>
 
-      <div class="carousel-inner">
+    </div>
 
-        <div class="carousel-item active">
-          <svg
-            aria-hidden="true"
-            class="bd-placeholder-img"
-            height="100%"
-            preserveAspectRatio="xMidYMid slice"
-            width="100%"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect
-              width="100%"
-              height="100%"
-              fill="var(--bs-secondary-color)"
-            ></rect>
-          </svg>
 
-          <div class="container">
-            <div class="carousel-caption text-start">
-              <h1>tanaman hias </h1>
-              <p class="opacity-75">
-                sedang mencari tanaman hias disini tempatnya
-              </p>
-              <p>
-                <a class="btn btn-lg btn-primary" href="#tanaman-hias">lihat</a>
-              </p>
-            </div>
-          </div>
+    <div class="carousel-item">
+
+      <div class="container">
+
+        <div class="carousel-caption text-end">
+
+          <h1>tanaman bunga</h1>
+
+          <p>
+            gak perlu ribet kemana mana tinggl pilih dan klik, barang sampai ke rumahmu
+          </p>
+
+          <p>
+            <a class="btn btn-lg btn-primary"
+               href="#tanaman-bunga">
+              lihat
+            </a>
+          </p>
+
         </div>
 
+      </div>
 
-        <div class="carousel-item">
-          <svg
-            aria-hidden="true"
-            class="bd-placeholder-img"
-            height="100%"
-            preserveAspectRatio="xMidYMid slice"
-            width="100%"
-            xmlns="http://www.w3.org/2000/svg" 
-          > 
-            <rect 
-              width="100%" 
-              height="100%" 
-              fill="var(--bs-secondary-color)" 
-            ></rect> 
-          </svg> 
+    </div>
 
-          <div class="container"> 
-            <div class="carousel-caption text-end"> 
-              <h1>tanaman bunga</h1> 
-              <p> 
-                gak perlu ribet kemana mana tinggl pilih dan klik, barang sampai ke rumahmu 
-              </p> 
-              <p> 
-                <a class="btn btn-lg btn-primary" href="#tanaman-bunga">lihat</a> 
-              </p> 
-            </div> 
-          </div> 
-        </div> 
+  </div>
 
-      </div> 
 
-      <button 
-        class="carousel-control-prev" 
-        type="button" 
-        data-bs-target="#myCarousel" 
-        data-bs-slide="prev" 
-      > 
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span> 
-        <span class="visually-hidden">Previous</span> 
-      </button> 
+  <button
+    class="carousel-control-prev"
+    type="button"
+    data-bs-target="#myCarousel"
+    data-bs-slide="prev">
 
-      <button 
-        class="carousel-control-next" 
-        type="button" 
-        data-bs-target="#myCarousel" 
-        data-bs-slide="next" 
-      > 
-        <span class="carousel-control-next-icon" aria-hidden="true"></span> 
-        <span class="visually-hidden">Next</span> 
-      </button> 
+    <span class="carousel-control-prev-icon"
+          aria-hidden="true">
+    </span>
 
-    </div> 
+    <span class="visually-hidden">
+      Previous
+    </span>
+
+  </button>
+
+
+  <button
+    class="carousel-control-next"
+    type="button"
+    data-bs-target="#myCarousel"
+    data-bs-slide="next">
+
+    <span class="carousel-control-next-icon"
+          aria-hidden="true">
+    </span>
+
+    <span class="visually-hidden">
+      Next
+    </span>
+
+  </button>
+
+</div>
 
 
 <!-- =========================
@@ -716,14 +1038,17 @@ body {
       </h1>
 
       <div class="section-line"></div>
+
     </div>
+
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
 
       <?php
+
       $query = mysqli_query(
         $koneksi,
-        "SELECT * FROM tb_produk"
+        "SELECT * FROM tb_produk WHERE status = 'aktif'"
       );
 
       while ($data = mysqli_fetch_array($query)) {
@@ -786,7 +1111,6 @@ body {
   </div>
 
 </div>
-
 
 
 <!-- =========================
@@ -819,7 +1143,9 @@ body {
 
       $query = mysqli_query(
         $koneksi,
-        "SELECT * FROM tb_produk WHERE id_kategori = 1"
+        "SELECT * FROM tb_produk
+         WHERE id_kategori = 1
+         AND status = 'aktif'"
       );
 
       while ($data = mysqli_fetch_array($query)) {
@@ -838,19 +1164,29 @@ body {
 
           </div>
 
+
           <div class="product-body">
 
             <h5 class="product-name">
+
               <?= htmlspecialchars($data['nama']) ?>
+
             </h5>
 
+
             <p class="product-price">
+
               Rp <?= number_format($data['harga'], 0, ',', '.') ?>
+
             </p>
 
+
             <p class="product-description">
+
               <?= htmlspecialchars($data['deskripsi']) ?>
+
             </p>
+
 
             <a href="detail.php?id=<?= $data['id'] ?>"
                class="btn btn-greenleaf w-100 mt-3">
@@ -872,7 +1208,6 @@ body {
   </div>
 
 </div>
-
 
 
 <!-- =========================
@@ -905,7 +1240,9 @@ body {
 
       $query = mysqli_query(
         $koneksi,
-        "SELECT * FROM tb_produk WHERE id_kategori = 2"
+        "SELECT * FROM tb_produk
+         WHERE id_kategori = 2
+         AND status = 'aktif'"
       );
 
       while ($data = mysqli_fetch_array($query)) {
@@ -924,19 +1261,29 @@ body {
 
           </div>
 
+
           <div class="product-body">
 
             <h5 class="product-name">
+
               <?= htmlspecialchars($data['nama']) ?>
+
             </h5>
 
+
             <p class="product-price">
+
               Rp <?= number_format($data['harga'], 0, ',', '.') ?>
+
             </p>
 
+
             <p class="product-description">
+
               <?= htmlspecialchars($data['deskripsi']) ?>
+
             </p>
+
 
             <a href="detail.php?id=<?= $data['id'] ?>"
                class="btn btn-greenleaf w-100 mt-3">
@@ -965,7 +1312,9 @@ body {
 ========================= -->
 
 <footer class="footer-greenleaf">
+
   <div class="container text-center">
+
     <h5 style="color:#0f5132; font-weight:700;">
       GREENLEAF GARDEN
     </h5>
@@ -980,11 +1329,13 @@ body {
     </a>
 
   </div>
+
 </footer>
 
 
 <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <script>
 
@@ -999,6 +1350,7 @@ Swal.fire({
 });
 
 <?php } ?>
+
 
 <?php if (isset($_GET['status']) && $_GET['status'] == 'logout') { ?>
 
@@ -1014,20 +1366,7 @@ Swal.fire({
 
 </script>
 
-<?php if (isset($_GET['status']) && $_GET['status'] == 'login') { ?>
 
-<script>
-Swal.fire({
-    icon: 'success',
-    title: 'Login Berhasil!',
-    text: 'Selamat datang di GreenLeaf Garden.',
-    confirmButtonColor: '#198754',
-    confirmButtonText: 'OK'
-});
-</script>
-
-<?php } ?>
-
-</body>
 </body>
 </html>
+```

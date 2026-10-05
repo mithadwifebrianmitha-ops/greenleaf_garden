@@ -6,13 +6,16 @@ include 'koneksi.php';
    CEK LOGIN
 ========================= */
 
-if (!isset($_SESSION['id_user'], $_SESSION['role'])) {
+if (
+    !isset($_SESSION['id_user']) ||
+    !isset($_SESSION['role']) ||
+    $_SESSION['role'] !== 'pelanggan'
+) {
     header("Location: login.php");
     exit;
 }
 
-$id_user = (int) $_SESSION['id_user'];
-$role    = $_SESSION['role'];
+$id_user = (int)$_SESSION['id_user'];
 
 
 /* =========================
@@ -24,845 +27,375 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     exit;
 }
 
-$id_transaksi = (int) $_GET['id'];
+$id_transaksi = (int)$_GET['id'];
 
 
 /* =========================
    AMBIL DATA TRANSAKSI
 ========================= */
 
-if ($role === 'admin') {
+$query_transaksi = mysqli_query(
+    $koneksi,
+    "SELECT
+        t.id_transaksi,
+        t.tanggal,
+        t.id_pelanggan,
+        t.total_harga,
+        u.nama,
+        u.email,
+        u.hp,
+        u.alamat
+    FROM tb_transaksi t
+    INNER JOIN tb_user u
+        ON t.id_pelanggan = u.id
+    WHERE t.id_transaksi = '$id_transaksi'
+      AND t.id_pelanggan = '$id_user'
+    LIMIT 1"
+);
 
-    $query_transaksi = mysqli_query(
-        $koneksi,
-        "SELECT *
-         FROM tb_transaksi
-         WHERE id_transaksi='$id_transaksi'"
-    );
-
-} elseif ($role === 'pelanggan') {
-
-    $query_transaksi = mysqli_query(
-        $koneksi,
-        "SELECT *
-         FROM tb_transaksi
-         WHERE id_transaksi='$id_transaksi'
-         AND id_pelanggan='$id_user'"
-    );
-
-} else {
-
-    header("Location: login.php");
-    exit;
+if (!$query_transaksi) {
+    die("Error transaksi: " . mysqli_error($koneksi));
 }
 
 $transaksi = mysqli_fetch_assoc($query_transaksi);
 
 if (!$transaksi) {
-
-    echo "<script>
-        alert('Transaksi tidak ditemukan.');
-        window.location.href='index.php';
-    </script>";
-
+    header("Location: index.php");
     exit;
 }
 
 
 /* =========================
-   DATA TRANSAKSI
-========================= */
-
-$id_pelanggan = (int) $transaksi['id_pelanggan'];
-
-$tanggal_transaksi =
-    $transaksi['tanggal'] ?? '-';
-
-$total_database =
-    (float) ($transaksi['total_harga'] ?? 0);
-
-
-/* =========================
-   FORMAT TANGGAL INDONESIA
-========================= */
-
-$bulan = [
-    1 => 'Januari',
-    2 => 'Februari',
-    3 => 'Maret',
-    4 => 'April',
-    5 => 'Mei',
-    6 => 'Juni',
-    7 => 'Juli',
-    8 => 'Agustus',
-    9 => 'September',
-    10 => 'Oktober',
-    11 => 'November',
-    12 => 'Desember'
-];
-
-function formatTanggalIndonesia($tanggal, $bulan)
-{
-    if (!$tanggal || $tanggal === '-') {
-        return '-';
-    }
-
-    $timestamp = strtotime($tanggal);
-
-    if (!$timestamp) {
-        return $tanggal;
-    }
-
-    $hari = date('d', $timestamp);
-
-    $bulan_num =
-        (int) date('m', $timestamp);
-
-    $tahun =
-        date('Y', $timestamp);
-
-    return
-        $hari . ' ' .
-        $bulan[$bulan_num] . ' ' .
-        $tahun;
-}
-
-
-/* =========================
-   DATA PELANGGAN
-========================= */
-
-$query_user = mysqli_query(
-    $koneksi,
-    "SELECT nama, email, hp, alamat
-     FROM tb_user
-     WHERE id='$id_pelanggan'"
-);
-
-$user = mysqli_fetch_assoc($query_user);
-
-
-/* =========================
-   DETAIL TRANSAKSI
+   AMBIL DETAIL TRANSAKSI
 ========================= */
 
 $query_detail = mysqli_query(
     $koneksi,
     "SELECT
-        d.*,
-        p.nama AS nama_produk,
+        d.id_detail,
+        d.id_transaksi,
+        d.id_produk,
+        d.jumlah,
+        p.nama,
         p.harga,
         p.poto
-     FROM tb_detail d
-     LEFT JOIN tb_produk p
+    FROM tb_detail d
+    INNER JOIN tb_produk p
         ON d.id_produk = p.id
-     WHERE d.id_transaksi='$id_transaksi'"
+    WHERE d.id_transaksi = '$id_transaksi'
+    ORDER BY d.id_detail ASC"
 );
 
-
-/* =========================
-   HITUNG TOTAL ITEM
-========================= */
-
-$total_item = 0;
-
-$total_hitung = 0;
-
-$data_detail = [];
-
-while ($detail = mysqli_fetch_assoc($query_detail)) {
-
-    $harga =
-        (float) ($detail['harga'] ?? 0);
-
-    $jumlah =
-        (int) ($detail['jumlah'] ?? 0);
-
-    $subtotal =
-        $harga * $jumlah;
-
-    $total_item += $jumlah;
-
-    $total_hitung += $subtotal;
-
-    $detail['harga_hitung'] =
-        $harga;
-
-    $detail['jumlah_hitung'] =
-        $jumlah;
-
-    $detail['subtotal_hitung'] =
-        $subtotal;
-
-    $data_detail[] =
-        $detail;
+if (!$query_detail) {
+    die("Error detail: " . mysqli_error($koneksi));
 }
 
 
 /* =========================
-   STATUS TRANSAKSI
+   PESAN SUKSES
 ========================= */
 
-$status_transaksi = "Berhasil";
+$purchase_success = false;
 
-
-/* =========================
-   NOMOR INVOICE
-========================= */
-
-$nomor_invoice =
-    'INV-' .
-    str_pad(
-        $id_transaksi,
-        6,
-        '0',
-        STR_PAD_LEFT
-    );
-
+if (
+    isset($_SESSION['purchase_success']) &&
+    $_SESSION['purchase_success'] === true
+) {
+    $purchase_success = true;
+    unset($_SESSION['purchase_success']);
+}
 ?>
 
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
 
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1">
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>
-        <?= $nomor_invoice ?> - GreenLeaf Garden
+        Invoice #<?= htmlspecialchars($transaksi['id_transaksi']) ?> - GreenLeaf Garden
     </title>
 
     <link
-        href="assets/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
-
+    <script
+        src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
 
     <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-
-            margin: 0;
-
-            background: #eef6f1;
-
-            font-family:
-                "Poppins",
-                Arial,
-                sans-serif;
-
-            color: #304238;
+            background: #f4f7f5;
+            font-family: Arial, sans-serif;
+            color: #333;
         }
 
-
-        .invoice-wrapper {
-
-            padding: 45px 15px;
+        .invoice-container {
+            max-width: 950px;
+            margin: 40px auto;
+            padding: 0 15px;
         }
-
 
         .invoice-card {
-
-            max-width: 950px;
-
-            margin: auto;
-
             background: white;
-
             border-radius: 18px;
-
-            overflow: hidden;
-
-            box-shadow:
-                0 15px 45px
-                rgba(23, 78, 48, 0.10);
+            padding: 35px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
         }
-
 
         /* =========================
            HEADER
         ========================= */
 
         .invoice-header {
-
-            padding: 32px 38px;
-
-            color: white;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #126b40,
-                    #198754,
-                    #42ad75
-                );
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 25px;
+            margin-bottom: 25px;
         }
 
-
-        .brand-title {
-
-            margin: 0;
-
-            font-size: 25px;
-
-            font-weight: 700;
+        .brand {
+            font-size: 27px;
+            font-weight: bold;
+            color: #198754;
+            letter-spacing: .5px;
         }
-
 
         .brand-subtitle {
-
-            margin: 6px 0 0;
-
-            font-size: 13px;
-
-            opacity: .88;
+            color: #777;
+            margin-top: 5px;
         }
 
-
-        .invoice-number {
-
+        .invoice-title {
             text-align: right;
         }
 
-
-        .invoice-label {
-
-            font-size: 12px;
-
-            letter-spacing: 1px;
-
-            opacity: .85;
+        .invoice-title h2 {
+            margin: 0;
+            font-weight: bold;
+            color: #222;
         }
 
-
-        .invoice-number strong {
-
-            display: block;
-
-            margin-top: 3px;
-
-            font-size: 21px;
-        }
-
-
-        /* =========================
-           BODY
-        ========================= */
-
-        .invoice-body {
-
-            padding: 35px 38px;
-        }
-
-
-        .section-title {
-
-            margin-bottom: 12px;
-
-            color: #176d43;
-
-            font-size: 14px;
-
+        .invoice-number {
+            color: #198754;
             font-weight: 600;
+            margin-top: 5px;
         }
-
-
-        /* =========================
-           INFO BOX
-        ========================= */
-
-        .info-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 15px;
-
-            margin-bottom: 28px;
-        }
-
-
-        .info-box {
-
-            padding: 17px;
-
-            border: 1px solid #dceae1;
-
-            border-radius: 12px;
-
-            background: #f8fcf9;
-        }
-
-
-        .info-label {
-
-            margin-bottom: 5px;
-
-            color: #789184;
-
-            font-size: 11px;
-
-            font-weight: 500;
-        }
-
-
-        .info-value {
-
-            color: #263d31;
-
-            font-size: 13px;
-
-            font-weight: 600;
-        }
-
 
         /* =========================
            CUSTOMER
         ========================= */
 
         .customer-box {
-
-            padding: 20px;
-
-            margin-bottom: 30px;
-
-            border: 1px solid #dceae1;
-
+            background: #f8f9fa;
             border-radius: 12px;
-
-            background: #f8fcf9;
+            padding: 20px;
+            margin-bottom: 25px;
         }
 
-
-        .customer-row {
-
-            display: grid;
-
-            grid-template-columns:
-                130px 1fr;
-
-            padding: 7px 0;
-
-            border-bottom:
-                1px dashed #dceae1;
-
-            font-size: 13px;
+        .customer-box h5 {
+            color: #198754;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
-
-        .customer-row:last-child {
-
-            border-bottom: none;
+        .customer-item {
+            line-height: 1.6;
         }
-
-
-        .customer-label {
-
-            color: #789184;
-        }
-
-
-        .customer-value {
-
-            color: #263d31;
-
-            font-weight: 500;
-        }
-
 
         /* =========================
            TABLE
         ========================= */
 
         .table {
-
             margin-bottom: 0;
+        }
 
+        .table thead th {
+            background: #198754;
+            color: white;
+            border: none;
+            padding: 13px;
+        }
+
+        .table thead th:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .table thead th:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .table tbody td {
+            padding: 15px 13px;
             vertical-align: middle;
         }
 
-
-        .table thead th {
-
-            padding: 13px;
-
-            border: none;
-
-            background: #eaf7ef;
-
-            color: #176d43;
-
-            font-size: 12px;
-
-            white-space: nowrap;
+        .product-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #eee;
         }
-
-
-        .table tbody td {
-
-            padding: 14px 13px;
-
-            font-size: 13px;
-
-            border-color: #e7eee9;
-        }
-
-
-        .product-name {
-
-            color: #263d31;
-
-            font-weight: 600;
-        }
-
 
         /* =========================
-           SUMMARY
+           TOTAL
         ========================= */
 
-        .summary-wrapper {
-
-            display: flex;
-
-            justify-content: flex-end;
-
-            margin-top: 25px;
-        }
-
-
-        .summary-box {
-
-            width: 320px;
-
+        .total-box {
+            background: #f1f8f4;
+            border-radius: 12px;
             padding: 20px;
-
-            border-radius: 14px;
-
-            background: #f1f9f4;
+            margin-top: 25px;
+            border: 1px solid #dcefe4;
         }
 
-
-        .summary-row {
-
-            display: flex;
-
-            justify-content:
-                space-between;
-
-            gap: 20px;
-
-            padding: 7px 0;
-
-            font-size: 13px;
+        .total-label {
+            font-size: 17px;
+            color: #555;
         }
 
-
-        .summary-total {
-
-            display: flex;
-
-            justify-content:
-                space-between;
-
-            margin-top: 10px;
-
-            padding-top: 13px;
-
-            border-top:
-                1px solid #cfe3d5;
-
-            font-size: 15px;
-
-            font-weight: 700;
-
-            color: #176d43;
+        .total-price {
+            font-size: 27px;
+            font-weight: bold;
+            color: #198754;
         }
-
-
-        .summary-total strong {
-
-            font-size: 18px;
-        }
-
 
         /* =========================
-           NOTE
+           BUTTON
         ========================= */
 
-        .invoice-note {
-
-            margin-top: 30px;
-
-            padding: 17px 20px;
-
-            border-left:
-                4px solid #198754;
-
-            border-radius: 8px;
-
-            background: #f7fbf8;
-        }
-
-
-        .invoice-note strong {
-
-            display: block;
-
-            margin-bottom: 5px;
-
-            color: #176d43;
-
-            font-size: 13px;
-        }
-
-
-        .invoice-note p {
-
-            margin: 0;
-
-            color: #718078;
-
-            font-size: 12px;
-
-            line-height: 1.7;
-        }
-
-
-        /* =========================
-           FOOTER
-        ========================= */
-
-        .invoice-footer {
-
-            padding: 22px 38px;
-
-            border-top:
-                1px solid #e5eee8;
-
-            background: #fbfdfc;
-        }
-
-
-        .footer-text {
-
-            margin: 0;
-
-            color: #7c8981;
-
-            text-align: center;
-
-            font-size: 11px;
-        }
-
-
-        /* =========================
-           ACTION
-        ========================= */
-
-        .invoice-actions {
-
+        .button-area {
             display: flex;
-
             justify-content: center;
-
-            gap: 10px;
-
-            padding:
-                25px 35px 35px;
+            gap: 12px;
+            margin-top: 30px;
         }
 
+        .btn-green,
+        .btn-print {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: .2s;
+            cursor: pointer;
+        }
 
         .btn-green {
-
-            border: none;
-
-            border-radius: 10px;
-
-            padding: 10px 18px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #198754,
-                    #27a965
-                );
-
+            background: #198754;
             color: white;
-
-            font-size: 13px;
-
-            font-weight: 500;
         }
-
 
         .btn-green:hover {
-
-            color: white;
-
             background: #157347;
+            color: white;
         }
 
-
-        .btn-outline-green {
-
-            border:
-                1px solid #c8ded0;
-
-            border-radius: 10px;
-
-            padding: 10px 18px;
-
-            background: white;
-
-            color: #198754;
-
-            font-size: 13px;
-
-            font-weight: 500;
+        .btn-print {
+            background: #212529;
+            color: white;
         }
 
-
-        .btn-outline-green:hover {
-
-            background: #eaf7ef;
-
-            color: #146c43;
+        .btn-print:hover {
+            background: #000;
+            color: white;
         }
-
-
-        .print-icon {
-
-            margin-right: 6px;
-
-            vertical-align: -2px;
-        }
-
-
-        /* =========================
-           PRINT
-        ========================= */
-
-        @media print {
-
-            body {
-
-                background: white;
-            }
-
-
-            .invoice-wrapper {
-
-                padding: 0;
-            }
-
-
-            .invoice-card {
-
-                max-width: none;
-
-                box-shadow: none;
-
-                border-radius: 0;
-            }
-
-
-            .invoice-actions {
-
-                display: none !important;
-            }
-
-
-            .invoice-footer {
-
-                background: white;
-            }
-
-        }
-
 
         /* =========================
            RESPONSIVE
         ========================= */
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
 
-            .invoice-header {
-
-                padding: 25px;
+            .invoice-container {
+                margin: 20px auto;
             }
 
-
-            .invoice-body {
-
-                padding: 22px;
-            }
-
-
-            .invoice-number {
-
-                margin-top: 18px;
-
-                text-align: left;
-            }
-
-
-            .info-grid {
-
-                grid-template-columns: 1fr;
-            }
-
-
-            .customer-row {
-
-                grid-template-columns: 1fr;
-
-                gap: 3px;
-            }
-
-
-            .summary-wrapper {
-
-                justify-content: stretch;
-            }
-
-
-            .summary-box {
-
-                width: 100%;
-            }
-
-
-            .invoice-actions {
-
-                flex-direction: column;
-
+            .invoice-card {
                 padding: 20px;
             }
 
+            .invoice-header {
+                flex-direction: column;
+                gap: 20px;
+            }
 
-            .invoice-actions a,
-            .invoice-actions button {
+            .invoice-title {
+                text-align: left;
+            }
 
+            .button-area {
+                flex-direction: column;
+            }
+
+            .btn-green,
+            .btn-print {
                 width: 100%;
+            }
+
+        }
+
+
+        /* =========================
+           CETAK
+        ========================= */
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .invoice-container {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            .invoice-card {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 10px;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .table thead th {
+                background: #198754 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .total-box {
+                background: #f1f8f4 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .product-img {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
             }
 
         }
@@ -871,44 +404,92 @@ $nomor_invoice =
 
 </head>
 
-
 <body>
 
-<div class="invoice-wrapper">
+<div class="invoice-container">
 
     <div class="invoice-card">
 
-
         <!-- =========================
-             HEADER
+             HEADER INVOICE
         ========================= -->
 
         <div class="invoice-header">
 
+            <div>
+
+                <div class="brand">
+                    GREENLEAF GARDEN
+                </div>
+
+                <div class="brand-subtitle">
+                    Tanaman untuk rumah yang lebih hijau
+                </div>
+
+            </div>
+
+
+            <div class="invoice-title">
+
+                <h2>INVOICE</h2>
+
+                <div class="invoice-number">
+                    #<?= htmlspecialchars($transaksi['id_transaksi']) ?>
+                </div>
+
+                <div class="text-muted">
+                    <?= htmlspecialchars($transaksi['tanggal']) ?>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             DATA PELANGGAN
+        ========================= -->
+
+        <div class="customer-box">
+
+            <h5>
+                Data Pelanggan
+            </h5>
+
             <div class="row">
 
-                <div class="col-md-8">
+                <div class="col-md-6 mb-3 customer-item">
 
-                    <h2 class="brand-title">
-                        GreenLeaf Garden
-                    </h2>
+                    <strong>Nama:</strong><br>
 
-                    <p class="brand-subtitle">
-                        Invoice Pembelian Tanaman & Perlengkapan
-                    </p>
+                    <?= htmlspecialchars($transaksi['nama']) ?>
 
                 </div>
 
 
-                <div class="col-md-4 invoice-number">
+                <div class="col-md-6 mb-3 customer-item">
 
-                    <div class="invoice-label">
-                        NOMOR INVOICE
-                    </div>
+                    <strong>Email:</strong><br>
 
-                    <strong>
-                        <?= $nomor_invoice ?>
-                    </strong>
+                    <?= htmlspecialchars($transaksi['email']) ?>
+
+                </div>
+
+
+                <div class="col-md-6 mb-2 customer-item">
+
+                    <strong>No. HP:</strong><br>
+
+                    <?= htmlspecialchars($transaksi['hp']) ?>
+
+                </div>
+
+
+                <div class="col-md-6 mb-2 customer-item">
+
+                    <strong>Alamat:</strong><br>
+
+                    <?= htmlspecialchars($transaksi['alamat']) ?>
 
                 </div>
 
@@ -918,453 +499,162 @@ $nomor_invoice =
 
 
         <!-- =========================
-             BODY
+             DETAIL PRODUK
         ========================= -->
 
-        <div class="invoice-body">
+        <div class="table-responsive">
 
+            <table class="table">
 
-            <!-- INFORMASI TRANSAKSI -->
+                <thead>
 
-            <div class="section-title">
-                Informasi Transaksi
-            </div>
+                    <tr>
 
+                        <th>Produk</th>
 
-            <div class="info-grid">
+                        <th>Harga</th>
 
+                        <th>Jumlah</th>
 
-                <div class="info-box">
+                        <th>Subtotal</th>
 
-                    <div class="info-label">
-                        ID TRANSAKSI
-                    </div>
+                    </tr>
 
-                    <div class="info-value">
-                        #<?= $id_transaksi ?>
-                    </div>
+                </thead>
 
-                </div>
 
+                <tbody>
 
-                <div class="info-box">
+                <?php while ($detail = mysqli_fetch_assoc($query_detail)): ?>
 
-                    <div class="info-label">
-                        TANGGAL TRANSAKSI
-                    </div>
+                    <?php
 
-                    <div class="info-value">
+                    $subtotal =
+                        (int)$detail['harga'] *
+                        (int)$detail['jumlah'];
 
-                        <?= formatTanggalIndonesia(
-                            $tanggal_transaksi,
-                            $bulan
-                        ) ?>
+                    ?>
 
-                    </div>
+                    <tr>
 
-                </div>
+                        <td>
 
+                            <div class="d-flex align-items-center gap-3">
 
-                <div class="info-box">
+                                <img
+                                    src="img/<?= htmlspecialchars($detail['poto']) ?>"
+                                    class="product-img"
+                                    onerror="this.style.display='none';"
+                                >
 
-                    <div class="info-label">
-                        STATUS TRANSAKSI
-                    </div>
+                                <div>
 
-                    <div class="info-value">
+                                    <?= htmlspecialchars($detail['nama']) ?>
 
-                        <span
-                            style="
-                            display:inline-block;
-                            padding:5px 10px;
-                            border-radius:20px;
-                            background:#dff5e7;
-                            color:#198754;
-                            font-size:11px;
-                            ">
+                                </div>
 
-                            <?= htmlspecialchars(
-                                $status_transaksi
-                            ) ?>
+                            </div>
 
-                        </span>
+                        </td>
 
-                    </div>
 
-                </div>
-
-            </div>
-
-
-            <!-- DATA PELANGGAN -->
-
-            <div class="section-title">
-                Informasi Pelanggan
-            </div>
-
-
-            <div class="customer-box">
-
-
-                <div class="customer-row">
-
-                    <div class="customer-label">
-                        Nama
-                    </div>
-
-                    <div class="customer-value">
-
-                        <?= htmlspecialchars(
-                            $user['nama'] ?? '-'
-                        ) ?>
-
-                    </div>
-
-                </div>
-
-
-                <div class="customer-row">
-
-                    <div class="customer-label">
-                        Email
-                    </div>
-
-                    <div class="customer-value">
-
-                        <?= htmlspecialchars(
-                            $user['email'] ?? '-'
-                        ) ?>
-
-                    </div>
-
-                </div>
-
-
-                <div class="customer-row">
-
-                    <div class="customer-label">
-                        No. HP
-                    </div>
-
-                    <div class="customer-value">
-
-                        <?= htmlspecialchars(
-                            $user['hp'] ?? '-'
-                        ) ?>
-
-                    </div>
-
-                </div>
-
-
-                <div class="customer-row">
-
-                    <div class="customer-label">
-                        Alamat
-                    </div>
-
-                    <div class="customer-value">
-
-                        <?= nl2br(
-                            htmlspecialchars(
-                                $user['alamat'] ?? '-'
-                            )
-                        ) ?>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- DETAIL PEMBELIAN -->
-
-            <div class="section-title">
-                Rincian Pembelian
-            </div>
-
-
-            <div class="table-responsive">
-
-                <table class="table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th width="45">
-                                No
-                            </th>
-
-                            <th>
-                                Produk
-                            </th>
-
-                            <th width="130">
-                                Harga Satuan
-                            </th>
-
-                            <th width="80">
-                                Jumlah
-                            </th>
-
-                            <th width="145">
-                                Subtotal
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-
-                    <?php if (count($data_detail) > 0): ?>
-
-                        <?php $no = 1; ?>
-
-
-                        <?php foreach (
-                            $data_detail
-                            as $detail
-                        ): ?>
-
-                            <tr>
-
-                                <td>
-                                    <?= $no++ ?>
-                                </td>
-
-
-                                <td class="product-name">
-
-                                    <?= htmlspecialchars(
-                                        $detail['nama_produk']
-                                        ?? '-'
-                                    ) ?>
-
-                                </td>
-
-
-                                <td>
-
-                                    Rp <?= number_format(
-                                        $detail['harga_hitung'],
-                                        0,
-                                        ',',
-                                        '.'
-                                    ) ?>
-
-                                </td>
-
-
-                                <td>
-
-                                    <?= $detail[
-                                        'jumlah_hitung'
-                                    ] ?>
-
-                                </td>
-
-
-                                <td>
-
-                                    <strong>
-
-                                        Rp <?= number_format(
-                                            $detail[
-                                                'subtotal_hitung'
-                                            ],
-                                            0,
-                                            ',',
-                                            '.'
-                                        ) ?>
-
-                                    </strong>
-
-                                </td>
-
-                            </tr>
-
-                        <?php endforeach; ?>
-
-
-                    <?php else: ?>
-
-                        <tr>
-
-                            <td
-                                colspan="5"
-                                class="text-center">
-
-                                Tidak ada detail produk.
-
-                            </td>
-
-                        </tr>
-
-                    <?php endif; ?>
-
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <!-- RINGKASAN -->
-
-            <div class="summary-wrapper">
-
-                <div class="summary-box">
-
-
-                    <div class="summary-row">
-
-                        <span>
-                            Jumlah Produk
-                        </span>
-
-                        <strong>
-                            <?= count(
-                                $data_detail
-                            ) ?>
-                            jenis
-                        </strong>
-
-                    </div>
-
-
-                    <div class="summary-row">
-
-                        <span>
-                            Total Item
-                        </span>
-
-                        <strong>
-                            <?= $total_item ?>
-                            item
-                        </strong>
-
-                    </div>
-
-
-                    <div class="summary-total">
-
-                        <span>
-                            TOTAL PEMBAYARAN
-                        </span>
-
-                        <strong>
+                        <td>
 
                             Rp <?= number_format(
-                                $total_hitung,
+                                $detail['harga'],
                                 0,
                                 ',',
                                 '.'
                             ) ?>
 
-                        </strong>
+                        </td>
 
-                    </div>
+
+                        <td>
+
+                            <?= (int)$detail['jumlah'] ?>
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+
+                                Rp <?= number_format(
+                                    $subtotal,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) ?>
+
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+                <?php endwhile; ?>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =========================
+             TOTAL
+        ========================= -->
+
+        <div class="total-box">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div class="total-label">
+
+                    Total Pembayaran
+
+                </div>
+
+
+                <div class="total-price">
+
+                    Rp <?= number_format(
+                        $transaksi['total_harga'],
+                        0,
+                        ',',
+                        '.'
+                    ) ?>
 
                 </div>
 
             </div>
 
-
-            <!-- CATATAN -->
-
-            <div class="invoice-note">
-
-                <strong>
-                    Catatan Invoice
-                </strong>
-
-                <p>
-
-                    Invoice ini merupakan bukti transaksi
-                    pembelian pada GreenLeaf Garden.
-                    Simpan invoice ini sebagai bukti
-                    transaksi Anda.
-
-                </p>
-
-            </div>
-
         </div>
 
 
         <!-- =========================
-             FOOTER
+             BUTTON
         ========================= -->
 
-        <div class="invoice-footer">
+        <div class="button-area no-print">
 
-            <p class="footer-text">
-
-                GreenLeaf Garden &bull;
-                Invoice <?= $nomor_invoice ?>
-
-            </p>
-
-        </div>
-
-
-        <!-- =========================
-             ACTION
-        ========================= -->
-
-        <div class="invoice-actions">
+            <a
+                href="index.php"
+                class="btn-green"
+            >
+                ← Kembali Belanja
+            </a>
 
 
             <button
                 type="button"
-                class="btn btn-green"
-                onclick="konfirmasiCetak();">
-
-                <svg
-                    class="print-icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16">
-
-                    <path d="M2 7a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h1v2h10v-2h1a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-1V2H3v5H2zm2-4h8v4H4V3zm7 9H5v-2H5v2h6v2zm3-2H2V8h12v2z"/>
-
-                </svg>
-
-                Cetak Invoice
-
+                class="btn-print"
+                onclick="window.print()"
+            >
+                🖨 Cetak Invoice
             </button>
-
-
-            <?php if ($role === 'admin'): ?>
-
-                <a
-                    href="transaksi.php"
-                    class="btn btn-outline-green">
-
-                    Kembali
-
-                </a>
-
-            <?php else: ?>
-
-                <a
-                    href="riwayat_transaksi.php"
-                    class="btn btn-outline-green">
-
-                    Kembali
-
-                </a>
-
-            <?php endif; ?>
-
 
         </div>
 
@@ -1373,57 +663,26 @@ $nomor_invoice =
 </div>
 
 
-<script
-    src="assets/dist/js/bootstrap.bundle.min.js">
-</script>
+<!-- =========================
+     SWEETALERT PEMBELIAN
+========================= -->
 
-<script
-    src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-</script>
-
+<?php if ($purchase_success): ?>
 
 <script>
 
-/* =========================
-   KONFIRMASI CETAK
-========================= */
-
-function konfirmasiCetak() {
-
-    Swal.fire({
-
-        title: 'Cetak Invoice?',
-
-        html:
-            'Invoice <strong><?= $nomor_invoice ?></strong>' +
-            '<br>' +
-            'akan dibuka dalam tampilan cetak.',
-
-        icon: 'question',
-
-        showCancelButton: true,
-
-        confirmButtonColor: '#198754',
-
-        cancelButtonColor: '#6c757d',
-
-        confirmButtonText: 'Ya, Cetak',
-
-        cancelButtonText: 'Batal'
-
-    }).then((result) => {
-
-        if (result.isConfirmed) {
-
-            window.print();
-
-        }
-
-    });
-
-}
+Swal.fire({
+    icon: 'success',
+    title: 'Pembelian Berhasil!',
+    text: 'Terima kasih sudah membeli di GreenLeaf Garden.',
+    confirmButtonText: 'Lihat Invoice',
+    confirmButtonColor: '#198754',
+    allowOutsideClick: false
+});
 
 </script>
+
+<?php endif; ?>
 
 
 </body>

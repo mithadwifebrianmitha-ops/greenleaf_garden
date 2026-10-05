@@ -834,10 +834,7 @@ if (isset($_POST['register'])) {
                 class="left-logo-wrap"
             >
 
-                <img
-                    src="logotoko.png"
-                    alt="GreenLeaf Garden"
-                >
+               
 
                 <span>
                     GreenLeaf Garden

@@ -843,11 +843,7 @@ $_SESSION['nama'] = !empty($data['nama']) ? $data['nama'] : $data['username'];
 
             <a href="index.php" class="left-logo-wrap">
 
-                <img
-                    src="logotoko.png"
-                    alt="GreenLeaf Garden"
-                >
-
+              
                 <span>
                     GreenLeaf Garden
                 </span>

@@ -503,6 +503,119 @@ if (
             }
 
         }
+        /* =========================
+   NAVBAR
+========================= */
+
+.navbar-green {
+    background: rgba(255,255,255,.94);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    border-bottom: 1px solid rgba(25,135,84,.08);
+    padding: 10px 0;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    color: #198754 !important;
+    font-size: 21px;
+    letter-spacing: .3px;
+    text-decoration: none;
+}
+
+.navbar-brand img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    margin-right: 9px;
+}
+
+.navbar-nav {
+    gap: 8px;
+}
+
+.navbar-nav .nav-link {
+    color: #53655c;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 15px !important;
+    border-radius: 10px;
+    transition: .25s;
+}
+
+.navbar-nav .nav-link i {
+    margin-right: 5px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #198754;
+    background: #edf8f2;
+}
+
+.nav-icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #198754;
+    background: #edf8f2;
+    transition: .3s;
+    font-size: 19px;
+}
+
+.nav-icon:hover {
+    background: #198754;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.nav-icon.active {
+    background: #198754;
+    color: white;
+}
+
+.navbar-toggler {
+    border: 1px solid #cfe5d8;
+    border-radius: 9px;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(25,135,84,.12);
+}
+
+
+/* =========================
+   MOBILE NAVBAR
+========================= */
+
+@media (max-width: 991px) {
+
+    .navbar-collapse {
+        margin-top: 15px;
+        padding: 12px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(25,135,84,.08);
+    }
+
+    .navbar-nav {
+        gap: 3px;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 11px 13px !important;
+    }
+
+    .navbar-collapse .d-flex {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #edf3ef;
+    }
+
+}
 
     </style>
 
@@ -516,26 +629,111 @@ if (
      NAVBAR
 ========================= -->
 
-<nav class="navbar navbar-green">
+<nav class="navbar navbar-expand-lg navbar-green sticky-top">
 
     <div class="container">
 
-        <a href="index.php" class="navbar-brand">
+        <!-- LOGO -->
+        <a href="index.php" class="navbar-brand d-flex align-items-center">
 
-                <img src="img/logotoko.png" class="logo" alt="GreenLeaf Garden">
-            </a>
+          
 
-
-            GreenLeaf Garden
-
-        </a>
-
-
-        <a href="index.php" class="nav-icon">
-
-            <i class="bi bi-house"></i>
+            <span>
+                GREENLEAF GARDEN
+            </span>
 
         </a>
+
+
+        <!-- TOGGLE MOBILE -->
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarGreenLeaf"
+            aria-controls="navbarGreenLeaf"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+
+        <!-- MENU -->
+        <div
+            class="collapse navbar-collapse"
+            id="navbarGreenLeaf"
+        >
+
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+
+                <!-- BERANDA -->
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="index.php"
+                    >
+
+                        <i class="bi bi-house-door"></i>
+
+                        Beranda
+
+                    </a>
+
+                </li>
+
+
+                <!-- PRODUK -->
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="index.php#produk"
+                    >
+
+                        <i class="bi bi-grid"></i>
+
+                        Produk
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+
+            <!-- ICON KANAN -->
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- KERANJANG -->
+                <a
+                    href="keranjang.php"
+                    class="nav-icon"
+                    title="Keranjang"
+                >
+
+                    <i class="bi bi-cart3"></i>
+
+                </a>
+
+
+                <!-- PROFILE -->
+                <a
+                    href="profile.php"
+                    class="nav-icon active"
+                    title="Profile"
+                >
+
+                    <i class="bi bi-person-fill"></i>
+
+                </a>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -912,7 +1110,7 @@ if (
 
 </div>
 
-
+<script src="assets/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
